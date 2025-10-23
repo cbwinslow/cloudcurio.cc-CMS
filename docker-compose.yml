@@ -1,0 +1,158 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: cms-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: changeme
+      MONGO_INITDB_DATABASE: cloudcurio_cms
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - cms_network
+
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: cms-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    networks:
+      - cms_network
+
+  # LocalAI - Local AI inference
+  localai:
+    image: quay.io/go-skynet/local-ai:latest
+    container_name: cms-localai
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - THREADS=4
+      - CONTEXT_SIZE=2048
+    volumes:
+      - localai_models:/models
+    networks:
+      - cms_network
+
+  # n8n - Workflow automation
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: cms-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=changeme
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5678/
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - cms_network
+
+  # SearXNG - Privacy-respecting metasearch engine
+  searxng:
+    image: searxng/searxng:latest
+    container_name: cms-searxng
+    restart: unless-stopped
+    ports:
+      - "8888:8080"
+    volumes:
+      - ./config/searxng:/etc/searxng
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:8888/
+    networks:
+      - cms_network
+
+  # Flowise - LLM orchestration
+  flowise:
+    image: flowiseai/flowise:latest
+    container_name: cms-flowise
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - FLOWISE_USERNAME=admin
+      - FLOWISE_PASSWORD=changeme
+      - DATABASE_PATH=/root/.flowise
+      - APIKEY_PATH=/root/.flowise
+      - SECRETKEY_PATH=/root/.flowise
+    volumes:
+      - flowise_data:/root/.flowise
+    networks:
+      - cms_network
+
+  # Redis - Cache and session storage
+  redis:
+    image: redis:7-alpine
+    container_name: cms-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - cms_network
+
+  # CMS Backend API
+  cms-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cms-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGODB_URI=mongodb://admin:changeme@mongodb:27017/cloudcurio_cms?authSource=admin
+      - QDRANT_URL=http://qdrant:6333
+      - LOCALAI_URL=http://localai:8080
+      - N8N_URL=http://n8n:5678
+      - SEARXNG_URL=http://searxng:8080
+      - FLOWISE_URL=http://flowise:3000
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-this
+    depends_on:
+      - mongodb
+      - qdrant
+      - redis
+      - localai
+      - n8n
+      - searxng
+      - flowise
+    volumes:
+      - ./src:/app/src
+      - ./uploads:/app/uploads
+    networks:
+      - cms_network
+
+volumes:
+  mongodb_data:
+  qdrant_storage:
+  localai_models:
+  n8n_data:
+  flowise_data:
+  redis_data:
+
+networks:
+  cms_network:
+    driver: bridge

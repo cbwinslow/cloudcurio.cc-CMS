@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudCurio CMS - AI-Powered Content Generator</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 CloudCurio CMS</h1>
+            <p class="subtitle">AI-Powered Blog Content Generation System</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="generate">Generate Article</button>
+            <button class="tab-btn" data-tab="articles">Articles</button>
+            <button class="tab-btn" data-tab="research">Research</button>
+            <button class="tab-btn" data-tab="chat">AI Chat</button>
+            <button class="tab-btn" data-tab="workflow">Workflows</button>
+        </nav>
+
+        <!-- Generate Article Tab -->
+        <div class="tab-content active" id="generate">
+            <div class="card">
+                <h2>Generate New Article</h2>
+                <form id="generateForm">
+                    <div class="form-group">
+                        <label for="topic">Topic / Title</label>
+                        <input type="text" id="topic" placeholder="Enter article topic..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tags">Tags (comma-separated)</label>
+                        <input type="text" id="tags" placeholder="ai, technology, research...">
+                    </div>
+                    <button type="submit" class="btn btn-primary">🚀 Generate Article</button>
+                </form>
+                <div id="generateResult" class="result-box"></div>
+            </div>
+
+            <div class="card">
+                <h2>Batch Generate</h2>
+                <form id="batchGenerateForm">
+                    <div class="form-group">
+                        <label for="batchTopics">Topics (one per line)</label>
+                        <textarea id="batchTopics" rows="5" placeholder="Topic 1&#10;Topic 2&#10;Topic 3..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-secondary">⚡ Batch Generate</button>
+                </form>
+                <div id="batchResult" class="result-box"></div>
+            </div>
+        </div>
+
+        <!-- Articles Tab -->
+        <div class="tab-content" id="articles">
+            <div class="card">
+                <h2>Articles</h2>
+                <div class="toolbar">
+                    <input type="text" id="searchArticles" placeholder="Search articles...">
+                    <button class="btn btn-small" onclick="loadArticles()">🔄 Refresh</button>
+                </div>
+                <div id="articlesList"></div>
+            </div>
+        </div>
+
+        <!-- Research Tab -->
+        <div class="tab-content" id="research">
+            <div class="card">
+                <h2>Deep Research</h2>
+                <form id="researchForm">
+                    <div class="form-group">
+                        <label for="researchTopic">Research Topic</label>
+                        <input type="text" id="researchTopic" placeholder="Enter research topic..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="researchTags">Tags</label>
+                        <input type="text" id="researchTags" placeholder="tag1, tag2...">
+                    </div>
+                    <button type="submit" class="btn btn-primary">🔍 Start Research</button>
+                </form>
+                <div id="researchResult" class="result-box"></div>
+            </div>
+
+            <div class="card">
+                <h2>Research History</h2>
+                <div id="researchList"></div>
+            </div>
+
+            <div class="card">
+                <h2>News Aggregator</h2>
+                <button class="btn btn-secondary" onclick="loadNews()">📰 Load Latest News</button>
+                <div id="newsList"></div>
+            </div>
+        </div>
+
+        <!-- Chat Tab -->
+        <div class="tab-content" id="chat">
+            <div class="card chat-container">
+                <h2>AI Chat (RAG-Powered)</h2>
+                <div id="chatMessages" class="chat-messages"></div>
+                <form id="chatForm" class="chat-input">
+                    <input type="text" id="chatMessage" placeholder="Ask me anything..." required>
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Workflow Tab -->
+        <div class="tab-content" id="workflow">
+            <div class="card">
+                <h2>Workflow Tasks</h2>
+                <div class="toolbar">
+                    <select id="taskFilter">
+                        <option value="">All Tasks</option>
+                        <option value="pending">Pending</option>
+                        <option value="running">Running</option>
+                        <option value="completed">Completed</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                    <button class="btn btn-small" onclick="loadWorkflowTasks()">🔄 Refresh</button>
+                    <button class="btn btn-small" onclick="processPendingTasks()">▶️ Process Pending</button>
+                </div>
+                <div id="tasksList"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>CloudCurio CMS v1.0 - Powered by AI Agents, RAG, Vector DB, and more</p>
+            <div class="services">
+                <span>Services: LocalAI • Qdrant • n8n • SearXNG • Flowise</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
