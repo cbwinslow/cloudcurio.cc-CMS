@@ -1,0 +1,51 @@
+use_default_settings: true
+
+general:
+  instance_name: "CloudCurio Search"
+  contact_url: false
+  enable_metrics: false
+
+search:
+  safe_search: 0
+  autocomplete: "google"
+  default_lang: "en"
+  formats:
+    - html
+    - json
+
+server:
+  secret_key: "changeme-in-production"
+  limiter: false
+  image_proxy: true
+  method: "GET"
+
+ui:
+  default_theme: simple
+  theme_args:
+    simple_style: auto
+
+enabled_plugins:
+  - 'Hash plugin'
+  - 'Self Information'
+  - 'Tracker URL remover'
+
+engines:
+  - name: google
+    engine: google
+    shortcut: go
+    
+  - name: bing
+    engine: bing
+    shortcut: bi
+    
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+    
+  - name: github
+    engine: github
+    shortcut: gh
